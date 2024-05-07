@@ -41,27 +41,40 @@ def algorithmTimeSeries(d, data, stream, fibo):
     result_cs = coeffs[0]
     print(result_cs)
 
-    maxBin = 70
-    b = np.linspace(0, maxBin, int(maxBin/d+1))
-    count = 0
-    indexes = np.digitize(result_cs, b)
+    # maxBin = 70
+    # b = np.linspace(0, maxBin, int(maxBin/d+1))
+    # count = 0
+    # indexes = np.digitize(result_cs, b)
 
-    bins = [[] for _ in range(100)]
-    for r in result_cs:
-        bins[indexes[count]].append((abs(r), count))
-        count += 1
+    # bins = [[] for _ in range(100)]
+    # for r in result_cs:
+    #     bins[indexes[count]].append((abs(r), count))
+    #     count += 1
+    bins = [[] for _ in range(int(len(result_cs)/6))]
+    e = 0
+    f = 0
+    for index in range(0, len(result_cs)):
+        print(e)
+        print(f)
+        bins[f].append(result_cs[index])
+        if e < 7:
+            e += 1
+        else:
+            e = 0
+            f += 1
+
     iIndex = 0
     for kBin in bins:
-        for (jValue, cCount) in kBin:
+        for jValue in kBin:
             iIndex += 1
             jValue = np.abs(jValue)
             fiboNr, nNumber = findFiboNr(fibo, jValue)
             l = int(np.floor(iIndex / d))
             wl = stream[l]
             if nNumber % 2 == wl:
-                result_cs[cCount] = fiboNr
+                result_cs[iIndex-1] = fiboNr
             else:
-                result_cs[cCount] = fibo[nNumber + 1]
+                result_cs[iIndex-1] = fibo[nNumber + 1]
     coeffs[0] = result_cs
     print(result_cs)
     signal = pywt.waverec(coeffs, 'Haar')
@@ -76,16 +89,27 @@ def algorithmTimeSeriesReverse(d, data, fibo):
     print(result_cs)
     print("Length = " + str(len(result_cs)))
 
-    maxBin = int(np.ceil(max(result_cs)))
-    b = np.linspace(0, maxBin, int(maxBin / d + 1))
-    count = 0
-    indexes = np.digitize(result_cs, b)
+    # maxBin = int(np.ceil(max(result_cs)))
+    # b = np.linspace(0, maxBin, int(maxBin / d + 1))
+    # count = 0
+    # indexes = np.digitize(result_cs, b)
+    #
+    # bins = [[] for _ in range(maxBin+1)]
+    # for r in result_cs:
+    #     print(indexes[count])
+    #     bins[indexes[count]].append((r, count))
+    #     count += 1
 
-    bins = [[] for _ in range(maxBin+1)]
-    for r in result_cs:
-        print(indexes[count])
-        bins[indexes[count]].append((r, count))
-        count += 1
+    bins = [[] for _ in range(int(len(result_cs)))]
+    e = 0
+    f = 0
+    for index in range(0, len(result_cs)):
+        bins[f].append(result_cs[index])
+        if e < d-1:
+            e += 1
+        else:
+            e = 0
+            f += 1
     iIndex = 0
     watermark = []
     print(bins)
@@ -93,7 +117,7 @@ def algorithmTimeSeriesReverse(d, data, fibo):
     for kBin in bins:
         zeros = 0
         ones = 0
-        for (jValue, cCount) in kBin:
+        for jValue in kBin:
             iIndex += 1
             jValue = np.abs(jValue)
             fiboNr, nNumber = findFiboNr(fibo, jValue)
