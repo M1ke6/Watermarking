@@ -36,28 +36,17 @@ def algorithmMehdiDavid(d, audio, stream, fibo):
     print(signal)
     return signal
 
-def algorithmTimeSeries(d, data, stream, fibo):
-    coeffs = pywt.wavedec(data, 'Haar', 'zero', 6)
+def algorithmTimeSeries(d, data, stream, fibo, nfibo):
+    coeffs = pywt.wavedec(data, 'Haar', 'zero', 3)
     result_cs = coeffs[0]
     print(result_cs)
 
-    # maxBin = 70
-    # b = np.linspace(0, maxBin, int(maxBin/d+1))
-    # count = 0
-    # indexes = np.digitize(result_cs, b)
-
-    # bins = [[] for _ in range(100)]
-    # for r in result_cs:
-    #     bins[indexes[count]].append((abs(r), count))
-    #     count += 1
-    bins = [[] for _ in range(int(len(result_cs)/6))]
+    bins = [[] for _ in range(int(len(result_cs)/(d-1)))]
     e = 0
     f = 0
     for index in range(0, len(result_cs)):
-        print(e)
-        print(f)
         bins[f].append(result_cs[index])
-        if e < 7:
+        if e < d-1:
             e += 1
         else:
             e = 0
@@ -67,38 +56,30 @@ def algorithmTimeSeries(d, data, stream, fibo):
     for kBin in bins:
         for jValue in kBin:
             iIndex += 1
-            jValue = np.abs(jValue)
-            fiboNr, nNumber = findFiboNr(fibo, jValue)
+            #jValue = np.abs(jValue)
+            fiboNr, nNumber = findFiboNr(fibo, nfibo, jValue)
             l = int(np.floor(iIndex / d))
             wl = stream[l]
             if nNumber % 2 == wl:
                 result_cs[iIndex-1] = fiboNr
+            elif fiboNr < 0:
+                result_cs[iIndex-1] = nfibo[nNumber + 1]
             else:
                 result_cs[iIndex-1] = fibo[nNumber + 1]
     coeffs[0] = result_cs
     print(result_cs)
     signal = pywt.waverec(coeffs, 'Haar')
 
-    signal = signal.astype(np.int16)
-    print(signal)
+    #signal = signal.astype(np.int16)
+    print("Output signal = " + str(signal))
     return signal
 
-def algorithmTimeSeriesReverse(d, data, fibo):
-    coeffs = pywt.wavedec(data, 'Haar', 'zero', 6)
+def algorithmTimeSeriesReverse(d, data, fibo, nfibo):
+    coeffs = pywt.wavedec(data, 'Haar', 'zero', 3)
     result_cs = coeffs[0]
+    print("Result_cs = ")
     print(result_cs)
     print("Length = " + str(len(result_cs)))
-
-    # maxBin = int(np.ceil(max(result_cs)))
-    # b = np.linspace(0, maxBin, int(maxBin / d + 1))
-    # count = 0
-    # indexes = np.digitize(result_cs, b)
-    #
-    # bins = [[] for _ in range(maxBin+1)]
-    # for r in result_cs:
-    #     print(indexes[count])
-    #     bins[indexes[count]].append((r, count))
-    #     count += 1
 
     bins = [[] for _ in range(int(len(result_cs)))]
     e = 0
@@ -110,7 +91,7 @@ def algorithmTimeSeriesReverse(d, data, fibo):
         else:
             e = 0
             f += 1
-    iIndex = 0
+
     watermark = []
     print(bins)
     print("There are " + str(len(bins)) + " bins")
@@ -118,9 +99,7 @@ def algorithmTimeSeriesReverse(d, data, fibo):
         zeros = 0
         ones = 0
         for jValue in kBin:
-            iIndex += 1
-            jValue = np.abs(jValue)
-            fiboNr, nNumber = findFiboNr(fibo, jValue)
+            fiboNr, nNumber = findFiboNr(fibo, nfibo, jValue)
             if nNumber % 2 == 0:
                 zeros += 1
             else:
@@ -129,22 +108,50 @@ def algorithmTimeSeriesReverse(d, data, fibo):
             watermark.append(0)
         elif ones > zeros:
             watermark.append(1)
-        # else:
-        #     print(9999)
+        elif ones == zeros and ones != 0:
+            watermark.append(2)
     return watermark
 
-def findFiboNr(fibo, j):
+# def findFiboNr(fibo, nfibo, j):
+#     x = 0
+#     if j < 0:
+#         while True:
+#             if nfibo[x] <= j:
+#                 disA = np.abs(nfibo[x] - j)
+#                 disB = np.abs(nfibo[x - 1] - j)
+#                 if disA < disB:
+#                     return nfibo[x], x
+#                 else:
+#                     return nfibo[x - 1], x - 1
+#             else:
+#                 x += 1
+#     else:
+#         while True:
+#             if fibo[x] >= j:
+#                 disA = np.abs(fibo[x] - j)
+#                 disB = np.abs(fibo[x + 1] - j)
+#                 if disA < disB:
+#                     return fibo[x], x
+#                 else:
+#                     return fibo[x + 1], x + 1
+#             else:
+#                 x += 1
+def findFiboNr(fibo, nfibo, j):
     x = 0
-    while True:
-        if fibo[x] > j:
-            disA = np.abs(fibo[x]-j)
-            disB = np.abs(fibo[x-1]-j)
-            if disA < disB:
-                return fibo[x], x
+    if j < 0:
+        while True:
+            if nfibo[x] < j:
+                return nfibo[x+1], x+1
             else:
-                return fibo[x-1], x - 1
-        else:
-            x += 1
+                x += 1
+    else:
+        while True:
+            if fibo[x] > j:
+                return fibo[x-1], x-1
+            else:
+                x += 1
+
+
 
 
 

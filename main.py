@@ -11,14 +11,19 @@ from FiboAudio import algorithmMehdiDavid, algorithmTimeSeries, algorithmTimeSer
 
 
 if __name__ == '__main__':
-    d = 7  # random.randint(0, 10)
+    d = 5  # random.randint(0, 10)
     s = numpy.random.randint(2, size=(1000,))
-    fibo = [0, 1, 2]
-    for x in range (3, 200):
+    fibo = [0, 0.2, 0.4, 0.6, 0.8, 1]
+    for x in range (6, 200):
         #fibo.append(fibo[x-2] + fibo[x-1])
-        fibo.append(round(fibo[x-1] * 1.3))
-
+        fibo.append(round(fibo[x-1] * 12)/10)
     print(fibo)
+    nfibo = [0, -0.2, -0.4, -0.6, -0.8, -1]
+    for x in range(6, 200):
+        # fibo.append(fibo[x-2] + fibo[x-1])
+        nfibo.append(round(nfibo[x - 1] * 12) / 10)
+
+    # print(fibo)
     # # fl, fh, d = tune(audio)
     # sr, audio = wavfile.read("Test_audio.wav")
     # # audio = a.readframes(-1)
@@ -36,15 +41,16 @@ if __name__ == '__main__':
 
     plt.plot(temps)
     plt.show()
-    print(1)
-    output = algorithmTimeSeries(d, temps, s, fibo)
+
+    output = algorithmTimeSeries(d, temps, s, fibo, nfibo)
     plt.plot(output)
     plt.show()
+    #output = output[1500:2500]
     with open('WatermarkWeather.txt', 'w') as f:
         for x in output:
             string = str(x)
             f.write(string + '\n')
-    watermark = algorithmTimeSeriesReverse(d, output, fibo)
+    watermark = algorithmTimeSeriesReverse(d, output, fibo, nfibo)
     cropStream = s[0:len(watermark)]
     errorRate = 0
     bits = 0
@@ -54,4 +60,4 @@ if __name__ == '__main__':
         bits += 1
     print("Error = " + str(errorRate) + " out of a total of " + str(bits) + " used bits in the watermark")
     print(watermark)
-    print(s)
+    print(cropStream)
