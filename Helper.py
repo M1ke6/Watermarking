@@ -21,7 +21,7 @@ def findFiboNr(fibo, nfibo, j):
     if j < 0:
         while True:
             if nfibo[x] < j:
-                return nfibo[x+1], x+1
+                return nfibo[x], x
             else:
                 x += 1
     else:
