@@ -3,7 +3,6 @@ import csv
 import random
 import time
 
-import numpy
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -12,7 +11,7 @@ from TimeSeriesWM import algorithmTimeSeries, algorithmTimeSeriesReverse
 
 def defineVars():
     fbin1 = int(input("Enter required framesize:\n"))                       # Stores frame size (how long watermark should be. Note: if the value is too high and the dwt is too high, the watermark will be shorter)
-    w1 = numpy.random.randint(2, size=(50,))                                # Randomly generated watermark bit stream, can be changed to a different way of generating
+    w1 = np.random.randint(2, size=(50,))                                # Randomly generated watermark bit stream, can be changed to a different way of generating
     dwtLevel1 = int(input("Enter required dwt level:\n"))                   # Stores the dwt level that should be applied to the data
     mult1 = int(input("Enter multiplication rate of reference sequence "
                       "(multiply the preferred rate by 10, so for 1.2 enter 12):\n"))    # Stores the multiplication rate (x10) that should be between the values of the reference set
@@ -53,7 +52,7 @@ def testImper():                                            # Test imperceptibil
     maxT = 0
     outputmp = []
     for i in range(100):
-        tmpW = numpy.random.randint(2, size=(50,))
+        tmpW = np.random.randint(2, size=(50,))
         outputmp = algorithmTimeSeries(fbin, d, tmpW, dwt, fibo, nfibo)
         avg += np.average(outputmp)
         minT += np.min(outputmp)
