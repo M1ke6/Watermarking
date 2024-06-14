@@ -3,7 +3,9 @@ import pywt
 
 from Helper import findWatermark, findFiboNr, fillBins
 
-
+# This whole file was made with the purpose to try out the idea of using SVD with the original algorithm.
+# I ended up abandoning this idea because SVD orders the values of variable 's' (line 28), which meant that I couldn't change some of the values and still know to which original position they belonged, because they would rearrange.
+# Feel free to explore this idea for future research
 def algorithmTimeSeries(d, data, stream, dwtLevel, fibo, nfibo):
     #print(pywt.wavelist())
     x = np.array(data)

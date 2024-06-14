@@ -1,4 +1,5 @@
-def fillBins(result_cs, d):
+def fillBins(result_cs, d):     # Create a list and fill the coefficients into bins with size n*d*d, where n is any positive value
+                                # This means we have d values per watermark bit and d watermark bits in the watermark
     bins = [[[] for _ in range(d+1)] for _ in range(int(len(result_cs)/d/d)+1)]
     e = 0
     f = 0
@@ -16,7 +17,7 @@ def fillBins(result_cs, d):
                 g += 1
     return bins
 
-def findFiboNr(fibo, nfibo, j):
+def findFiboNr(fibo, nfibo, j):     # Find the number in fibo/nfibo that is closest to the value of j
     x = 0
     if j < 0:
         while True:
@@ -31,6 +32,7 @@ def findFiboNr(fibo, nfibo, j):
             else:
                 x += 1
 
+#Debugging purposes, not used in algorithm
 def findWatermark(wList):
     watermark = []
     for x in range(len(wList[0])):
